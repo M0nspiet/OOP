@@ -7,13 +7,13 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g
 
 # Исходные файлы
-SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp Bot.cpp AbilityManager.cpp
+SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp AbilityManager.cpp Bot.cpp
 
 # Объектные файлы
 OBJS = $(SRCS:.cpp=.o)
 
 # Исполняемый файл
-TARGET = battleship_game
+TARGET = BattleShip
 
 # Правило по умолчанию
 all: $(TARGET)
@@ -30,7 +30,11 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f $(OBJS) $(TARGET)
 # Правила для использования UTF-8 в Windows (необязательно)
-# Uncomment these lines if you're running on Windows and need UTF-8 encoding
 # include <windows.h>
 # SetConsoleOutputCP(CP_UTF8);
 # SetConsoleCP(CP_UTF8);
+
+#Если не хочет запускаться вводим по другому:
+#g++ -std=c++17 -Wall -g -c AbilityManager.cpp -o AbilityManager.o
+#g++ -std=c++17 -Wall -g -c main.cpp -o main.o
+#g++ -std=c++17 -Wall -g -o BattleShip main.o BattleMap.o ShipManager.o Ship.o Ability.o AbilityManager.o Bot.o

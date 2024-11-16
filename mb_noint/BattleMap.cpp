@@ -4,7 +4,6 @@
 #include "ShipManager.h"
 #define _HAS_STD_BYTE 0
 
-
 using namespace std;
 
 BattleMap::BattleMap(int width, int height) : width(width), height(height) {
@@ -56,20 +55,35 @@ bool BattleMap::shoot(int x, int y, BattleMap& playerMap, BattleMap& botMap, Shi
         // Проверяем, уничтожен ли корабль
         if (isShipDestroyed(x, y)) {
             cout << "Корабль уничтожен!" << endl;
-            // abilityManager->applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);
-            // Применяем случайную способность
-            if (abilityManager) {  // Убедитесь, что abilityManager инициализирован
-                abilityManager->applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);
+            
+            // Добавляем случайную способность при уничтожении корабля
+            if (abilityManager) {
+                abilityManager->applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);  // Используем applyRandomAbility
+                cout << "Получена новая способность!" << endl;
             }
         }
-
         return true; // Попадание
+    } else if (map[y][x] == CellStatus::Unknown) {
+        map[y][x] = CellStatus::Miss;  // Маркируем как промах
+        cout << "Промах!" << endl;
     }
-
-    cout << "Промах!" << endl;
     return false; // Промах
 }
 
+
+bool BattleMap::isShipDestroyed(int x, int y) {
+    std::vector<std::pair<int, int>> shipCoords = getShipCoordinates(x, y);
+
+    for (const auto& coord : shipCoords) {
+        if (map[coord.second][coord.first] == CellStatus::Ship) {
+            return false; // Корабль не уничтожен
+        }
+    }
+
+    // Если корабль уничтожен, обводим его
+    markSurroundingCells(x, y);
+    return true; // Корабль полностью уничтожен
+}
 
 void BattleMap::markSurroundingCells(int x, int y) {
     vector<std::pair<int, int>> shipCoords = getShipCoordinates(x, y);
@@ -122,16 +136,16 @@ vector<pair<int, int>> BattleMap::getShipCoordinates(int x, int y) {
     return shipCoordinates;
 }
 
-bool BattleMap::isShipDestroyed(int x, int y) {
-    std::vector<std::pair<int, int>> shipCoords = getShipCoordinates(x, y);
-
-    for (const auto& coord : shipCoords) {
-        if (map[coord.second][coord.first] == CellStatus::Ship) {
-            return false; // Корабль не уничтожен
+bool BattleMap::allShipsDestroyed() {
+    // Проходим по всей карте и ищем клетки с кораблями
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            if (map[y][x] == CellStatus::Ship) {
+                return false; // Если находим клетку с кораблем, возвращаем false
+            }
         }
     }
-
-    return true; // Корабль полностью уничтожен
+    return true; // Все корабли уничтожены
 }
 
 void BattleMap::displayDouble(const BattleMap& playerMap, const BattleMap& botMap, bool hideBotShips) {
@@ -194,31 +208,6 @@ void BattleMap::displayDouble(const BattleMap& playerMap, const BattleMap& botMa
     }
 }
 
-bool BattleMap::allShipsDestroyed() {
-    // Проходим по всей карте и ищем клетки с кораблями
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            if (map[y][x] == CellStatus::Ship) {
-                return false; // Если находим клетку с кораблем, возвращаем false
-            }
-        }
-    }
-    return true; // Все корабли уничтожены
-}
-
-BattleMap::CellStatus BattleMap::getCellStatus(int x, int y) const {
-    return map[y][x];
-}
-
-void BattleMap::applyDoubleDamage(int x, int y) {
-    // Например, если попали по кораблю, сразу уничтожаем сегмент
-    if (map[y][x] == CellStatus::Ship) {
-        map[y][x] = CellStatus::Hit;
-        // Уничтожаем сразу два сегмента, если это возможно
-        // Здесь логика зависит от вашей реализации кораблей и их сегментов
-        cout << "Двойной урон! Два сегмента уничтожены." << endl;
-    }
-}
 
 int BattleMap::getWidth() const { return width; }
 int BattleMap::getHeight() const { return height; }

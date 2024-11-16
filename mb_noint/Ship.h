@@ -9,7 +9,7 @@ using namespace std;
 
 class Ship {
 public:
-    enum class State { //enum class используем для безопасности класса, что бы небыло ошибок в преобразовании типов
+    enum class State { // enum class для безопасности, чтобы избежать ошибок преобразования типов
         Intact,
         Damaged,
         Destroyed
@@ -20,6 +20,7 @@ public:
     void printStatus() const;
     int getLength() const;
     bool isVerticalOrientation() const;
+
     int getX() const { return startX; }
     int getY() const { return startY; }
 
@@ -33,4 +34,4 @@ private:
     string stateToString(State state) const;
 };
 
-#endif
+#endif // SHIP_H

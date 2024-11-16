@@ -54,50 +54,27 @@ int main() {
                 cin >> useAbility;
 
                 // Проверка корректности ввода
-                if (cin.fail()) {
+                if (cin.fail() || (toupper(useAbility) != 'Y' && toupper(useAbility) != 'N')) {
                     cin.clear(); // Сброс флага ошибки
                     cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера
-                    cout << "Ошибка ввода! Попробуйте снова." << endl;
+                    cout << "Некорректный ввод! Попробуйте снова." << endl;
                     continue;
                 }
 
-                useAbility = toupper(useAbility);
-                if (useAbility == 'Y' || useAbility == 'N') break;
-                else {
-                    cout << "Пожалуйста, введите 'Y' для использования способности или 'N' для пропуска." << endl;
-                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Очистка буфера перед повторным запросом
+                break;
+            }
+
+            if (toupper(useAbility) == 'Y') {
+                // Применение случайной способности
+                if (abilityManager.getAbilityCount() > 0) {
+                    abilityManager.applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);
+                    player1Turn = false; // Ход переходит к боту после использования способности
+                } else {
+                    std::cout << "Нет доступных способностей для использования." << std::endl;
                 }
             }
 
-            if (useAbility == 'Y') {
-                // Показать доступные способности
-                abilityManager.displayAbilities();
-
-                int abilityChoice;
-                while (true) {
-                    cout << "Введите номер способности, которую хотите использовать (0 для отмены): ";
-                    if (!(cin >> abilityChoice)) {
-                        cout << "Ошибка ввода! Пожалуйста, введите номер способности." << endl;
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        continue;
-                    }
-
-                    // Проверка на корректность выбора способности
-                    if (abilityChoice == 0) {
-                        cout << "Отмена использования способности." << endl;
-                        break;
-                    } else if (abilityChoice > 0 && abilityChoice <= abilityManager.getAbilityCount()) {
-                        abilityManager.applyAbility(abilityChoice, playerMap, botMap, playerShipManager, botShipManager);
-                        player1Turn = false; // Ход переходит к боту после использования способности
-                        break;
-                    } else {
-                        cout << "Некорректный выбор способности! Попробуйте снова." << endl;
-                    }
-                }
-            }
-
-            // Если игрок не использовал способность, он стреляет
+            // Если способность не использовалась или была отменена, выполняется выстрел
             if (player1Turn) {
                 int x, y;
                 while (true) {
@@ -117,7 +94,7 @@ int main() {
                 }
 
                 if (!botMap.shoot(x, y, playerMap, botMap, playerShipManager, botShipManager)) {
-                    player1Turn = false; // Ход переходит к боту, если промах
+                    player1Turn = false; // Ход переходит к боту при промахе
                 }
             }
 
@@ -127,17 +104,19 @@ int main() {
             cout << "Бот выбрал координаты (" << x << ", " << y << ")" << endl;
 
             if (!playerMap.shoot(x, y, playerMap, botMap, playerShipManager, botShipManager)) {
-                player1Turn = true; // Ход переходит к игроку
+                player1Turn = true; // Ход переходит к игроку при промахе
             }
         }
 
-        // Проверка на окончание игры
+        // Применение случайной способности после уничтожения всех кораблей у бота
         if (botMap.allShipsDestroyed()) {
             cout << "Вы выиграли!" << endl;
-            break;
+            cout << "Применяется случайная способность!" << endl;
+            abilityManager.applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);
+            break; // Выход из игры, так как победа достигнута
         } else if (playerMap.allShipsDestroyed()) {
             cout << "О нет, бот победил!" << endl;
-            break;
+            break; // Выход из игры, так как бот победил
         }
     }
 

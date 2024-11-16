@@ -5,6 +5,7 @@
 using namespace std;
 
 void DoubleDamageAbility::apply(BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager) {
+    
     cout << "Применена способность: Двойной урон!" << endl;
 
     int x, y;
@@ -54,10 +55,26 @@ void BombardmentAbility::apply(BattleMap& playerMap, BattleMap& botMap, ShipMana
     const Ship& randomShip = botShipManager.getShips()[randomShipIndex];
     int segmentIndex = rand() % randomShip.getLength();
 
-    int x = randomShip.getX() + segmentIndex;
+    int x = randomShip.getX();
     int y = randomShip.getY();
 
-    cout << "Обстрел по кораблю " << randomShip.getLength() << "-сегментному и его сегменту " << segmentIndex << endl;
+    // Используем метод isVerticalOrientation() для проверки ориентации
+    if (randomShip.isVerticalOrientation()) {
+        y += segmentIndex;  // Если корабль вертикальный, меняем только y
+    } else {
+        x += segmentIndex;  // Если горизонтальный, меняем только x
+    }
 
-    botMap.shoot(x, y, playerMap, botMap, playerShipManager, botShipManager); // Выстрел по случайным координатам
+    // Ограничиваем координаты x и y в пределах от 0 до 9
+    x = std::min(std::max(x, 0), 9);
+    y = std::min(std::max(y, 0), 9);
+
+    cout << "Обстрел по кораблю с координатами: (" << x << ", " << y << ")" << endl;
+
+    // Проверяем, что координаты не выходят за границы карты
+    if (x >= 0 && x < botMap.getWidth() && y >= 0 && y < botMap.getHeight()) {
+        botMap.shoot(x, y, playerMap, botMap, playerShipManager, botShipManager); // Выстрел по случайным координатам
+    } else {
+        cout << "Ошибка: выстрел выходит за пределы карты!" << endl;
+    }
 }
