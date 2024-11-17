@@ -1,4 +1,5 @@
 #include "Ship.h"
+#include <cstdlib> // Для функции rand()
 
 Ship::Ship(int length, bool isVertical) : length(length), isVertical(isVertical) {
     segments.resize(length, State::Intact);
@@ -19,6 +20,35 @@ void Ship::receiveDamage(int segmentIndex) {
     } else {
         cout << "Segment " << segmentIndex << " is already destroyed." << endl;
     }
+}
+
+bool Ship::hitRandomSegment() {
+    // Собираем все не повреждённые сегменты
+    vector<int> intactSegments;
+    for (int i = 0; i < length; ++i) {
+        if (segments[i] == State::Intact) {
+            intactSegments.push_back(i);
+        }
+    }
+
+    // Если нет неповреждённых сегментов, возвращаем false
+    if (intactSegments.empty()) {
+        return false;
+    }
+
+    // Выбираем случайный сегмент и наносим урон
+    int randomIndex = rand() % intactSegments.size();
+    receiveDamage(intactSegments[randomIndex]);
+    return true;
+}
+
+bool Ship::isDestroyed() const {
+    for (const auto& segment : segments) {
+        if (segment != State::Destroyed) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Ship::printStatus() const {

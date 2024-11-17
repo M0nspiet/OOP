@@ -16,13 +16,22 @@ public:
     };
 
     Ship(int length, bool isVertical);
+
+    // Получить координаты
+    int getX() const { return startX; }
+    int getY() const { return startY; }
+
+    void setPosition(int x, int y) { startX = x; startY = y; }
+
+    // Атака и статус
     void receiveDamage(int segmentIndex);
+    bool hitRandomSegment(); // Новый метод
+    bool isDestroyed() const;
+
+    // Геттеры
     void printStatus() const;
     int getLength() const;
     bool isVerticalOrientation() const;
-
-    int getX() const { return startX; }
-    int getY() const { return startY; }
 
 private:
     int startX;

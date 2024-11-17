@@ -132,7 +132,7 @@ bool AbilityManager::isValidAbilityChoice(int choice) {
     if (found == abilities.end() || found->second.second <= 0) {
         return false;
     }
-    
+
     return true;
 }
 
@@ -164,7 +164,7 @@ void AbilityManager::assignRandomAbility() {
 
     // Создаем массив с указателями на все способности
     vector<Ability*> allAbilities = {new DoubleDamageAbility(), new ScannerAbility(), new BombardmentAbility()};
-    
+
     // Генерация случайного индекса для выбора одной способности
     int randomIndex = rand() % allAbilities.size();
 
@@ -180,4 +180,13 @@ void AbilityManager::assignRandomAbility() {
             abilities["Bombardment"] = {allAbilities[randomIndex], 1};
             break;
     }
+}
+
+bool AbilityManager::hasAnyAbility() const {
+    for (const auto& ability : abilities) {
+        if (ability.second.second > 0) { // Если количество больше нуля
+            return true;
+        }
+    }
+    return false;
 }

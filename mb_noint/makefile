@@ -7,7 +7,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g
 
 # Исходные файлы
-SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp AbilityManager.cpp Bot.cpp
+SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp AbilityManager.cpp Bot.cpp Check.cpp
 
 # Объектные файлы
 OBJS = $(SRCS:.cpp=.o)

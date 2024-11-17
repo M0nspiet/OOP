@@ -2,6 +2,7 @@
 #include "BattleMap.h"
 #include "Ship.h"
 #include "ShipManager.h"
+#include "Check.h"
 #define _HAS_STD_BYTE 0
 
 using namespace std;
@@ -15,6 +16,9 @@ BattleMap::BattleMap(int width, int height) : width(width), height(height) {
 }
 
 bool BattleMap::placeShip(const Ship& ship, int x, int y) {
+    // Проверка на пересечение с другими кораблями
+    bool canPlace = true; // Логика проверки пересечения
+    Check::checkShipPlacement(canPlace);
     if (ship.isVerticalOrientation()) {
         if (y + ship.getLength() > height) return false; // Проверка выхода за границы
         for (int i = -1; i <= ship.getLength(); ++i) {

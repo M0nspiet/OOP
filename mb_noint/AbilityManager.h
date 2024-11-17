@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+class Ability;
+
 class AbilityManager {
 public:
     // Добавляем способность в список
@@ -26,7 +28,7 @@ public:
     void initializeAbilities();
 
     bool isValidAbilityChoice(int choice);
-    
+
     void applyAbility(int choice, BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager);
 
     void assignRandomAbility();
@@ -34,6 +36,9 @@ public:
     std::map<std::string, std::pair<Ability*, int>>& getAbilities() {
         return abilities;
     }
+
+    // Новый метод для проверки наличия хотя бы одной способности
+    bool hasAnyAbility() const;
 
 private:
     std::map<std::string, std::pair<Ability*, int>> abilities; // Название, способность и её количество
