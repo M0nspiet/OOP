@@ -31,6 +31,7 @@ int main() {
     abilityManager.addAbility(new DoubleDamageAbility());
     abilityManager.addAbility(new ScannerAbility());
     abilityManager.addAbility(new BombardmentAbility());
+    abilityManager.assignRandomAbility();
 
     // Размещение кораблей
     cout << "Я разместил корабли рандомно." << endl;
@@ -65,12 +66,19 @@ int main() {
             }
 
             if (toupper(useAbility) == 'Y') {
-                // Применение случайной способности
-                if (abilityManager.getAbilityCount() > 0) {
-                    abilityManager.applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);
+                // Вывод списка доступных способностей
+                cout << "Доступные способности:" << endl;
+                abilityManager.displayAbilities(); // Показываем список способностей
+                cout << "Введите номер способности: ";
+                int abilityChoice;
+                cin >> abilityChoice;
+
+                // Применение выбранной способности
+                if (abilityManager.isValidAbilityChoice(abilityChoice)) {
+                    abilityManager.applyAbility(abilityChoice, playerMap, botMap, playerShipManager, botShipManager);
                     player1Turn = false; // Ход переходит к боту после использования способности
                 } else {
-                    std::cout << "Нет доступных способностей для использования." << std::endl;
+                    cout << "Некорректный выбор способности!" << endl;
                 }
             }
 

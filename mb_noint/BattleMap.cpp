@@ -57,10 +57,10 @@ bool BattleMap::shoot(int x, int y, BattleMap& playerMap, BattleMap& botMap, Shi
             cout << "Корабль уничтожен!" << endl;
             
             // Добавляем случайную способность при уничтожении корабля
-            if (abilityManager) {
-                abilityManager->applyRandomAbility(playerMap, botMap, playerShipManager, botShipManager);  // Используем applyRandomAbility
-                cout << "Получена новая способность!" << endl;
-            }
+            // if (abilityManager) {
+            //     abilityManager->assignRandomAbility();  // Добавляем случайную способность
+            //     cout << "Получена новая способность!" << endl;
+            // }
         }
         return true; // Попадание
     } else if (map[y][x] == CellStatus::Unknown) {
@@ -72,7 +72,7 @@ bool BattleMap::shoot(int x, int y, BattleMap& playerMap, BattleMap& botMap, Shi
 
 
 bool BattleMap::isShipDestroyed(int x, int y) {
-    std::vector<std::pair<int, int>> shipCoords = getShipCoordinates(x, y);
+    vector<std::pair<int, int>> shipCoords = getShipCoordinates(x, y);
 
     for (const auto& coord : shipCoords) {
         if (map[coord.second][coord.first] == CellStatus::Ship) {
@@ -82,6 +82,10 @@ bool BattleMap::isShipDestroyed(int x, int y) {
 
     // Если корабль уничтожен, обводим его
     markSurroundingCells(x, y);
+    if (abilityManager) {
+                abilityManager->assignRandomAbility();  // Добавляем случайную способность
+                cout << "Получена новая способность!" << endl;
+    }
     return true; // Корабль полностью уничтожен
 }
 
