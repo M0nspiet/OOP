@@ -10,10 +10,6 @@
 
 class AbilityManager {
 public:
-    struct AbilityEntry {
-        Ability* ability;
-        int count;
-    };
     // Добавляем способность в список
     void addAbility(Ability* ability);
 

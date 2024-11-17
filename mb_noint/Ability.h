@@ -14,6 +14,10 @@ public:
 
     // Метод для получения имени способности
     virtual std::string getName() const = 0;
+
+    // Метод для использования способности
+    //virtual void use(BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager) = 0;
+
 };
 
 // Примеры реализаций способностей

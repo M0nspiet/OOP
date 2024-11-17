@@ -1,32 +1,26 @@
 #include "AbilityManager.h"
 #include <iostream>
-#include <cstdlib> // Для rand()
-
-// struct AbilityEntry {
-//     Ability* ability;
-//     int count;
-// };
+#include <cstdlib>
+#include <limits>
 
 void AbilityManager::addAbility(Ability* ability) {
     const std::string& name = ability->getName();
     if (abilities.find(name) == abilities.end()) {
-        abilities[name] = {ability, 1}; // Добавляем способность с количеством 1
+        abilities[name] = {ability, 1};
     } else {
-        abilities[name].second++; // Увеличиваем количество
+        abilities[name].second++;
     }
 }
 
-// Инициализация случайной способности в начале игры
 void AbilityManager::initializeAbilities() {
     if (abilities.empty()) {
         std::cout << "Нет доступных способностей!" << std::endl;
         return;
     }
 
-    // Применяем случайную способность
     int randomIndex = rand() % abilities.size();
     auto it = std::next(abilities.begin(), randomIndex);
-    it->second.second++; // Увеличиваем количество случайной способности
+    it->second.second++;
 }
 
 void AbilityManager::applyRandomAbility(BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager) {
@@ -47,76 +41,120 @@ void AbilityManager::applyRandomAbility(BattleMap& playerMap, BattleMap& botMap,
 }
 
 void AbilityManager::displayAbilities() const {
-    std::cout << "Доступные способности:" << std::endl;
-    
-    // Список всех возможных способностей
+    cout << "Доступные способности:" << endl;
+
     std::map<std::string, Ability*> allAbilities = {
+        {"Bombardment", new BombardmentAbility()},
         {"DoubleDamage", new DoubleDamageAbility()},
-        {"Scanner", new ScannerAbility()},
-        {"Bombardment", new BombardmentAbility()}
+        {"Scanner", new ScannerAbility()}
     };
-    
-    // Вывод всех способностей, даже если их количество 0
+
     int index = 1;
     for (const auto& abilityPair : allAbilities) {
         auto it = abilities.find(abilityPair.first);
-        int count = (it != abilities.end()) ? it->second.second : 0;  // Если способность есть, выводим её количество, иначе 0
-        std::cout << index++ << ". " << abilityPair.first << " (" << count << " шт)" << std::endl;
+        int count = (it != abilities.end()) ? it->second.second : 0;
+        cout << index++ << ". " << abilityPair.first << " (" << count << " шт)" << endl;
     }
+
+    cout << "0. Выход из меню" << endl;
 }
+
+// void AbilityManager::displayAbilities() const {
+//     cout << "Доступные способности:" << endl;
+
+//     int index = 1; // Индекс для отображения пользователю
+//     for (const auto& abilityPair : abilities) {
+//         const std::string& abilityName = abilityPair.first;
+//         int count = abilityPair.second.second; // Количество способностей
+
+//         if (count > 0) {
+//             cout << index++ << ". " << abilityName << " (" << count << " шт)" << endl;
+//         }
+//     }
+
+//     // Показываем выход из меню
+//     cout << "0. Выход из меню" << endl;
+// }
 
 
 void AbilityManager::handleAbilityInput(BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager) {
-    if (abilities.empty()) {
-        std::cout << "Нет доступных способностей для использования!" << std::endl;
-        return;
-    }
+    while (true) {
+        displayAbilities(); // Выводим список всех способностей
+        cout << "Введите номер способности (или 0 для выхода): ";
 
-    displayAbilities(); // Показываем список способностей
+        int choice;
+        cin >> choice;
 
-    int choice;
-    std::cout << "Введите номер способности: ";
-    std::cin >> choice;
-
-    // Проверка на правильность выбора способности
-    if (choice < 1 || choice > static_cast<int>(abilities.size())) {
-        std::cout << "Неверный выбор! Способность не применена." << std::endl;
-        return;
-    }
-
-    // Перемещаем итератор к выбранной способности
-    auto it = std::next(abilities.begin(), choice - 1);
-    std::string abilityName = it->first;
-
-    // Проверяем, доступна ли выбранная способность
-    if (it->second.second > 0) {
-        std::cout << "Применена способность: " << abilityName << std::endl;
-        it->second.first->apply(playerMap, botMap, playerShipManager, botShipManager);
-
-        // Уменьшаем количество использованных способностей
-        if (--it->second.second == 0) {
-            abilities.erase(it);  // Удаляем способность из списка, если она закончилась
+        // Проверка корректности ввода
+        if (cin.fail()) {
+            cin.clear(); // Сброс флага ошибки
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Очистка буфера
+            cout << "Некорректный ввод. Пожалуйста, введите номер способности." << endl;
+            continue;
         }
-    } else {
-        std::cout << "Способность " << abilityName << " закончилась и не может быть использована!" << std::endl;
+
+        // Выход из меню при выборе 0
+        if (choice == 0) {
+            cout << "Выход из меню выбора способностей." << endl;
+            break;
+        }
+
+        // Проверка, что выбранная способность действительна
+        if (!isValidAbilityChoice(choice)) {
+            cout << "Некорректный выбор способности. Попробуйте снова." << endl;
+            continue;
+        }
+
+        // Применяем выбранную способность
+        applyAbility(choice, playerMap, botMap, playerShipManager, botShipManager);
+        break; // Завершаем цикл после успешного применения способности
     }
 }
 
 bool AbilityManager::isValidAbilityChoice(int choice) {
-    auto it = abilities.begin();
-    std::advance(it, choice - 1); // Перемещаем итератор на нужную позицию
-    return it != abilities.end() && it->second.second > 0;  // Проверяем количество способностей
+    if (choice < 1 || choice > 3) { // Проверка диапазона (от 1 до 3)
+        return false;
+    }
+
+    // Список всех возможных способностей
+    std::map<std::string, Ability*> allAbilities = {
+        {"Bombardment", new BombardmentAbility()},
+        {"DoubleDamage", new DoubleDamageAbility()},
+        {"Scanner", new ScannerAbility()}
+    };
+
+    // Проверяем наличие и количество по индексу
+    auto it = allAbilities.begin();
+    std::advance(it, choice - 1); // Смещаем итератор на выбранный элемент
+    const std::string& abilityName = it->first;
+
+    auto found = abilities.find(abilityName);
+    if (found == abilities.end() || found->second.second <= 0) {
+        return false;
+    }
+    
+    return true;
 }
 
 void AbilityManager::applyAbility(int choice, BattleMap& playerMap, BattleMap& botMap, ShipManager& playerShipManager, ShipManager& botShipManager) {
-    auto it = abilities.begin();
-    std::advance(it, choice - 1);  // Перемещаем итератор на нужную позицию
+    // Список всех возможных способностей
+    std::map<std::string, Ability*> allAbilities = {
+        {"Bombardment", new BombardmentAbility()},
+        {"DoubleDamage", new DoubleDamageAbility()},
+        {"Scanner", new ScannerAbility()}
+    };
 
-    if (it != abilities.end() && it->second.second > 0) {  // Проверяем, есть ли способность
-        it->second.first->apply(playerMap, botMap, playerShipManager, botShipManager);  // Применяем способность
-        it->second.second--;  // Уменьшаем количество использованных способностей
+    auto it = allAbilities.begin();
+    std::advance(it, choice - 1); // Смещаем итератор на выбранный элемент
+    const std::string& abilityName = it->first;
+
+    auto found = abilities.find(abilityName);
+    if (found != abilities.end() && found->second.second > 0) {
+        cout << "Применена способность: " << abilityName << endl;
+        found->second.first->apply(playerMap, botMap, playerShipManager, botShipManager);
+        found->second.second--; // Уменьшаем количество использований способности
     } else {
-        cout << "Невозможное использование этой способности!" << endl;
+        cout << "Способность " << abilityName << " недоступна!" << endl;
     }
 }
 
