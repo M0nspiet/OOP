@@ -7,7 +7,7 @@ class MapRenderer {
 public:
     MapRenderer(const BattleMap& playerMap, const BattleMap& botMap);
 
-    void render(std::ostream& ost) const; // Метод для отрисовки игры
+    void render(std::ostream& ost) const;
 
 private:
     const BattleMap& playerMap;

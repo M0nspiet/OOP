@@ -7,7 +7,6 @@
 class Game;
 
 class GameUI {
-
 public:
     GameUI(Game* game_);
 
@@ -22,4 +21,4 @@ public:
     Game* game;
 };
 
-#endif // GAMEUI_H
+#endif // GAMEUI_H  
