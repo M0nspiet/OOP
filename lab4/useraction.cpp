@@ -75,15 +75,20 @@ void UserActions::AttackAction::read() {
         std::cout << "Введите координаты для атаки (x y): ";
 
         std::cin >> x >> y;
-        if (false == Check::checkAttackBounds(x, y, 10, 10)) { //TODO: magic numbers
-            std::cout << "плохие координаты\n";
+
+        if (std::cin.fail()) {
+            std::cin.clear(); 
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Введите числа от 0 до 9\n";
             continue;
         }
-        if (false == std::cin.fail() && std::cin.peek() == '\n') {
-            return;
+
+        if (false == Check::checkAttackBounds(x, y, 10, 10)) {
+            std::cout << "Введите числа от 0 до 9.\n";
+            continue;
         }
 
-        clear_input();
+        break;
     }
 }
 

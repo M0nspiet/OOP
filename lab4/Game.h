@@ -4,11 +4,13 @@
 #include "BattleMap.h"
 #include "ShipManager.h"
 #include "Bot.h"
-#include "useraction.h"
 #include "GameRender.h"
 #include "MapRender.h"
-
 #include "gameui.h"
+
+#include <map>
+#include <fstream>
+#include <sstream>
 
 class Ability;
 
@@ -20,6 +22,7 @@ public:
     void saveGame(const std::string& filename); // Метод сохранения игры
     void loadGame(const std::string& filename); // Метод загрузки игры
     Ability *first_userAbility();
+
 private:
     void botTurn();
     void displayMap();
@@ -41,6 +44,8 @@ private:
     WhoMove who_move;
 
     bool isGamePlayed;
+
+    std::map<char, UserActions::UserAction*> keyBindings; // Соответствие символов командам
 
     friend class GameUI;
 

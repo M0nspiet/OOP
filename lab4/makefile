@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g
 
 # Исходные файлы
-SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp AbilityManager.cpp Bot.cpp Check.cpp Game.cpp GameState.cpp useraction.cpp MapRender.cpp GameRender.h gameui.cpp
+SRCS = main.cpp BattleMap.cpp ShipManager.cpp Ship.cpp Ability.cpp AbilityManager.cpp Bot.cpp Check.cpp Game.cpp GameState.cpp useraction.cpp MapRender.cpp GameRender.h gameui.cpp GameController.h
 
 # Объектные файлы
 OBJS = $(SRCS:.cpp=.o)

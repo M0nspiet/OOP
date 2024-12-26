@@ -5,7 +5,6 @@
 #include "AbilityManager.h"
 #include "GameState.h"
 
-#include "useraction.h"
 #include "GameRender.h"
 #include "MapRender.h"
 
@@ -23,6 +22,7 @@ Game::Game()
     
     playerShipManager.placeShipsRandomly(playerMap);
     botShipManager.placeShipsRandomly(botMap);
+
 }
 
 void Game::runGame() {
@@ -34,7 +34,6 @@ void Game::game_loop(){
         displayMap();
 
         if (playerMap.allShipsDestroyed()) {
-
             ui.print_message("О нет, бот победил! Начинаем новую игру...");
 
             playerMap = BattleMap(10, 10);
@@ -104,7 +103,7 @@ void Game::call_action(UserActions::UserAction* action) {
         else {
             if (botMap.isShipDestroyed(attack_action->x, attack_action->y)) {
                 ui.print_message("Корабль уничтожен!");
-                if (playerMap.abilityManager) { //TODO: а менеджера может не быть?
+                if (playerMap.abilityManager) {
                     playerMap.abilityManager->assignRandomAbility();
                     ui.print_message("Получена новая способность!");
                 }
@@ -144,7 +143,6 @@ void Game::botTurn() {
     }
 }
 
-// Сохранение состояния игры
 void Game::saveGame(const std::string& filename) {
     GameState gameState(playerMap, botMap, playerShipManager, botShipManager, bot);
 
@@ -155,7 +153,6 @@ void Game::saveGame(const std::string& filename) {
     ui.print_sstream(messages);
 }
 
-// Загрузка состояния игры
 void Game::loadGame(const std::string& filename) {
     try {
         GameState gameState(playerMap, botMap, playerShipManager, botShipManager, bot);
@@ -171,6 +168,6 @@ void Game::loadGame(const std::string& filename) {
         ui.print_sstream(messages);
     }
     catch(...) {
-
+        ui.print_message("Ошибка при загрузке игры.");
     }
 }
